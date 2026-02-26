@@ -941,7 +941,7 @@ def main():
     finally:
         try:
             engine.dispose()
-            time.sleep(10)  # Sleep for 300 seconds (5 minutes)
+            time.sleep(10)  # Sleep for 10 seconds (5 minutes)
             
         except Exception:
             pass
