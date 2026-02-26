@@ -315,6 +315,7 @@ def run_sync(period="today", date=None):
 
 if __name__ == "__main__":
     # 5. CLI Parameter Implementation
+    #
     parser = argparse.ArgumentParser(description="eIDSR to Zebra Sync")
     parser.add_argument("-p", "--period", choices=["today", "this_week", "all_time", "custom"], default="today")
     parser.add_argument("-d", "--date")
