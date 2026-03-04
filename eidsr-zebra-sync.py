@@ -215,7 +215,7 @@ def run_sync(period="today", date=None):
                 "enrollments": [target_enr_obj]
             }
 
-        # --- PROGRAM SUMMARY VERBOSE ---
+        # ---- PROGRAM SUMMARY VERBOSE ----
         if duplicate_count > 0:
             print(f"  > Cleaned up {duplicate_count} duplicate enrollments (First-In-Wins logic).")
         if skipped_ous:
