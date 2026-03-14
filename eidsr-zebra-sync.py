@@ -130,6 +130,12 @@ def map_attributes(source_attrs, mappings, allowed_ids=None):
 # ----------------------------
 
 def run_sync(period="today", date=None):
+    now = datetime.now()
+    
+    #only sync between 08hrs and 18hrs
+    if now.hour < 8 or now.hour > 18:
+        return 0
+        
     with open(MAPPING_FILE, 'r') as f:
         mappings = json.load(f)["mappingDictionary"]
 
@@ -140,7 +146,7 @@ def run_sync(period="today", date=None):
 
     source_programs = [PROG_EBS, PROG_IBS]
     sync_queue = {}
-    now = datetime.utcnow()
+
 
     # Date Calculation
     if period == "today":
@@ -152,7 +158,7 @@ def run_sync(period="today", date=None):
     else:
         start_date = "1900-01-01"
 
-    print(f"\n--- SYNC PROCESS (Period: {period}, Date: {start_date}) ---")
+    print(f"\n--- SYNC PROCESS (Sync Period: {period}, Sync Date: {start_date}, Run Date: {now.strftime('%d %B %Y %H:%M')}) ---")
 
     for prog_id in source_programs:
         print(f"\nProcessing Program: {prog_id}")
