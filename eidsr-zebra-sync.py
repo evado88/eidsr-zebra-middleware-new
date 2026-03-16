@@ -150,8 +150,6 @@ def run_sync(period="yesterday", date=None):
 
     print(f"\n--- SYNC PROCESS (Sync Period: {period}, Sync Date: {start_date}, Run Date: {now.strftime('%d %B %Y %H:%M')}) ---")
 
-    return 0
-
     with open(MAPPING_FILE, 'r') as f:
         mappings = json.load(f)["mappingDictionary"]
 
