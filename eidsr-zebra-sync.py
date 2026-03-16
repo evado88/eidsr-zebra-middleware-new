@@ -129,13 +129,29 @@ def map_attributes(source_attrs, mappings, allowed_ids=None):
 # 5. Main Sync Workflow
 # ----------------------------
 
-def run_sync(period="today", date=None):
+def run_sync(period="yesterday", date=None):
     now = datetime.now()
     
     #only sync between 08hrs and 18hrs
     if now.hour < 8 or now.hour > 18:
         return 0
         
+    # Date Calculation
+    if period == "today":
+        start_date = now.strftime('%Y-%m-%d')
+    elif period == "yesterday":
+        start_date = (now - timedelta(days=1)).strftime('%Y-%m-%d')
+    elif period == "this_week":
+        start_date = (now - timedelta(days=now.weekday())).strftime('%Y-%m-%d')
+    elif period == "custom":
+        start_date = date
+    else:
+        start_date = "1900-01-01"
+
+    print(f"\n--- SYNC PROCESS (Sync Period: {period}, Sync Date: {start_date}, Run Date: {now.strftime('%d %B %Y %H:%M')}) ---")
+
+    return 0
+
     with open(MAPPING_FILE, 'r') as f:
         mappings = json.load(f)["mappingDictionary"]
 
@@ -147,18 +163,7 @@ def run_sync(period="today", date=None):
     source_programs = [PROG_EBS, PROG_IBS]
     sync_queue = {}
 
-
-    # Date Calculation
-    if period == "today":
-        start_date = now.strftime('%Y-%m-%d')
-    elif period == "this_week":
-        start_date = (now - timedelta(days=now.weekday())).strftime('%Y-%m-%d')
-    elif period == "custom":
-        start_date = date
-    else:
-        start_date = "1900-01-01"
-
-    print(f"\n--- SYNC PROCESS (Sync Period: {period}, Sync Date: {start_date}, Run Date: {now.strftime('%d %B %Y %H:%M')}) ---")
+    
 
     for prog_id in source_programs:
         print(f"\nProcessing Program: {prog_id}")
@@ -241,7 +246,7 @@ def run_sync(period="today", date=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--period", choices=["today", "this_week", "all_time", "custom"], default="today")
+    parser.add_argument("-p", "--period", choices=["today", "this_week", "all_time", "custom"], default="yesterday")
     parser.add_argument("-d", "--date")
     args = parser.parse_args()
     run_sync(period=args.period, date=args.date)
