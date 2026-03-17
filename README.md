@@ -1,12 +1,11 @@
-# CCL Test Costing Backend - FastAPI Project
+# ZEBRA eIDSR Python Sync Script
 
-A lightweight and high-performance API built with FastAPI
+A lightweight python file that synchronises data from eIDSR to ZEBRA 
 
 ## Project Structure (Example)
 
     project/
-        models/
-        routes/
+        config/
         .gitignore
         database.py
         main.py
