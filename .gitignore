@@ -3,5 +3,5 @@
 /dags
 /menv
 /zebra_payload.json
-/config/zebra_auth.json
-/config/eIDSR_auth.json
+zebra_auth.json
+eIDSR_auth.json
