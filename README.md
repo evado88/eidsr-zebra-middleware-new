@@ -7,16 +7,17 @@ A lightweight python file that synchronises data from eIDSR to ZEBRA
     project/
         config/
         .gitignore
-        database.py
-        main.py
-        requirements.txt
         README.md
+        auth-template.json
+        eidsr-zebra-sync.py
+        requirements.txt
+
 
 ## Prerequisites
 
 -   Python 3.10+
 -   pip
--   Git (optional)
+-   Git
 -   Virtual environment tool: venv (recommended)
 
 ## 1. Create and Activate Virtual Environment
@@ -40,20 +41,19 @@ After activating your virtual environment:
     pip install --upgrade pip
     pip install -r requirements.txt
 
-## 3. Running the FastAPI Project
+## 3. Copy server auth files to config folder and provide server and user details
+ 
+    cp auth-template.json config/zebra_auth.json
+    cp auth-template.json config/eIDSR_auth.json
 
-### UNIX
+## 4. Run Sync
 
-    uvicorn app.main:app --reload
+### UNIX & Windows
 
-### Windows
+    python3 eidsr-zebra-sync.py
+    python eidsr-zebra-sync.py
 
-    uvicorn app.main:app --reload
-
-API will be available at: http://127.0.0.1:8000
-
-Interactive docs: http://127.0.0.1:8000/docs\
-http://127.0.0.1:8000/redoc
+Sync results will be displayed in console
 
 ## 4. Running Tests (optional)
 
@@ -68,6 +68,5 @@ http://127.0.0.1:8000/redoc
 ## Notes
 
 -   Activate your virtual environment before running commands.
--   Ensure the database settings are specified correctly in database.py and that databse is accessible before running project
--   Use uvicorn for development; consider gunicorn + uvicorn workers or Docker for production.
+-   Ensure the server name and user authentication details are specified correctly in the corresponding zebra_auth.json and eIDSR_auth.json before running project
 -   Keep requirements.txt updated for consistent deployments.
