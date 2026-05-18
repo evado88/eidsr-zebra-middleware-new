@@ -20,6 +20,11 @@ PROG_EBS = "JRuLW57woOB"
 PROG_IBS = "xDsAFnQMmeU"
 TE_TYPE_ZEBRA = "QH1LBzGrk5g"
 
+# Filtering Constants
+VERIF_ATTR_IBS = "d1AUyuOOo62"
+VERIF_ATTR_EBS = "BgAqKOVZteZ"
+VERIFIED_CODE = "VERIFICATION_STATUS_VERIFIED"
+
 
 # ----------------------------
 # 1. Server Connectivity & Analytics
@@ -176,7 +181,8 @@ def run_sync(period="yesterday", date=None):
         prog_meta = eidsr_api.get(f'programs/{prog_id}', params={
             'fields': 'programTrackedEntityAttributes[trackedEntityAttribute[id]]'}).json()
         allowed_teas = {a['trackedEntityAttribute']['id'] for a in prog_meta.get('programTrackedEntityAttributes', [])}
-
+        skipped_unverified = 0
+        
         for enr in instances:
             tei_id = enr['trackedEntity']
 
@@ -186,10 +192,23 @@ def run_sync(period="yesterday", date=None):
             # Fetch TEI to analyze enrollments
             tei_full = eidsr_api.get(f'tracker/trackedEntities/{tei_id}', params={'fields': '*'}).json()
 
+            tei_attrs = {a['attribute']: a['value'] for a in tei_full.get('attributes', [])}
+
+            # VERIFICATION FILTER
+            target_verif_attr = VERIF_ATTR_EBS if prog_id == PROG_EBS else PROG_IBS
+            
+            if tei_attrs.get(target_verif_attr) != VERIFIED_CODE:
+                skipped_unverified += 1
+                continue
+            
             # --- DEDUPLICATION: FIRST ENROLLMENT WINS ---
             relevant_enrs = [e for e in tei_full.get('enrollments', []) if e['program'] == prog_id]
             if not relevant_enrs: continue
+            
+            
+            
 
+            
             # Sort by createdAt (earliest first)
             relevant_enrs.sort(key=lambda x: x['createdAt'])
             winner_enr = relevant_enrs[0]
@@ -227,6 +246,8 @@ def run_sync(period="yesterday", date=None):
         # ---- PROGRAM SUMMARY VERBOSE ----
         if duplicate_count > 0:
             print(f"  > Cleaned up {duplicate_count} duplicate enrollments (First-In-Wins logic).")
+        if skipped_unverified > 0:
+            print(f"  > Skipped unverified  {skipped_unverified} enrollments from sync.")
         if skipped_ous:
             print(f"  > SKIPPED: {len(skipped_ous)} unique OUs not found in Zebra: {', '.join(skipped_ous)}")
         print(
